@@ -32,7 +32,7 @@ I'll update the readme when the program is at a usable state with usage and buil
                              ..:-=++=--:...          ........                           
 Author: Kevin (Kage) Pyro 
 
-Subdomain Bruteforcer, and directory bruteforcer written in rust, and multi threaded!!!
+Rust re-write of eyewitness! Currently only grabs screenshots, but the full report is on the to-do.
 
 Usage: rustwitness --urls <URLS> --threads <THREADS> --output-dir <OUTPUT_DIR>
 

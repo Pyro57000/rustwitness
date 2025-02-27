@@ -3,7 +3,7 @@ use clap::Parser;
 use webscreenshotlib::{screenshot_tab, write_screenshot, OutputFormat};
 use std::process::exit;
 
-/// Subdomain Bruteforcer, and directory bruteforcer written in rust, and multi threaded!!!
+/// Rust re-write of eyewitness! Currently only grabs screenshots, but the full report is on the to-do.
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args{
