@@ -1,4 +1,4 @@
-use std::{fs, thread};
+use std::{fs, string, thread};
 use clap::Parser;
 use webscreenshotlib::{screenshot_tab, write_screenshot, OutputFormat};
 use std::process::exit;
@@ -11,8 +11,8 @@ struct Args{
     #[arg(short, long)]
     urls: String,
 
-    ///Threads to use, there is not upper limit so if you lock up your comptuer that's on you
-    #[arg(short, long)]
+    ///Threads to use, there is not upper limit so if you lock up your comptuer that's on you. Defaults to the number of urls you have in the file.
+    #[arg(short, long, default_value_t = 0)]
     threads: usize,
 
     ///  path to a folder to save the screenshots to
@@ -38,6 +38,23 @@ fn take_screenshot(url: String, output_dir: &String){
         return;
     }
     screenshot_result.unwrap();
+}
+
+fn get_user_input(prompt:&str) -> String{
+    let mut response = String::new();
+    loop{
+        println!("{}", prompt);
+        let result = std::io::stdin().read_line(&mut response);
+        if result.is_err(){
+            println!("we need input here dummy, try again...");
+        }
+        else{
+            break;
+        }
+    }
+    let output = response.trim_end().to_owned();
+    return output;
+
 }
 fn main() {
     print!("
@@ -101,14 +118,30 @@ Author: Kevin (Kage) Pyro
     }
     let mut threads = Vec::new();
     let url_count = urls_to_try.len();
-    if &args.threads > &url_count{
+    let mut thread_number:usize = 0;
+    if &args.threads == &thread_number{
+        println!("\nWARNING NO THREAD COUNT GIVEN DEFAULTING TO {}\n", &url_count);
+        let thread_response = get_user_input("is this ok? very high thread counts may lock up your computer.");
+        if thread_response.to_lowercase().contains("y"){
+            println!("ok continuing with {} threads...", {&url_count});
+            thread_number = url_count;
+        }
+        else{
+            println!("ok try passing a thread number with -t then!");
+            exit(1);
+        }
+    }
+    else if &args.threads > &url_count{
         println!("Error thread count higher then the number of urls you provided!");
         println!("please reduce thread count to {} or lower", &url_count);
         println!("Url count:{}", &url_count);
         println!("provided thread count:{}", &args.threads);
         exit(1);
     }
-    let chunksize = url_count / args.threads;
+    else {
+        thread_number = args.threads;
+    }
+    let chunksize = url_count / thread_number;
     let url_vecs: Vec<Vec<String>> = urls_to_try.chunks(chunksize).map(|x| x.to_vec()).collect();
     //let test_url = "https://google.com".to_owned();
     //take_screenshot(&test_url, &output_dir);
